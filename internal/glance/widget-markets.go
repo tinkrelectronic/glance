@@ -169,9 +169,14 @@ func fetchMarketsDataFromYahoo(marketRequests []marketRequest) (marketList, erro
 
 		points := svgPolylineCoordsFromYValues(100, 50, maybeCopySliceWithoutZeroValues(prices))
 
-		currency, exists := currencyToSymbol[strings.ToUpper(result.Meta.Currency)]
-		if !exists {
-			currency = result.Meta.Currency
+		// don't add currency to indices ^
+		var currency string
+		if !strings.HasPrefix(marketRequests[i].Symbol, "^") {
+			var ok bool
+			currency, ok = currencyToSymbol[strings.ToUpper(result.Meta.Currency)]
+			if !ok {
+				currency = result.Meta.Currency
+			}
 		}
 
 		markets = append(markets, market{
